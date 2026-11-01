@@ -5,7 +5,8 @@ receivers on rooted LG webOS TVs.
 
 Some LG kernels support Xbox controller input but omit `CONFIG_JOYSTICK_XPAD_LEDS`,
 leaving all four LEDs blinking even when the controller works. This app can turn
-the LEDs off or set LED 1 steadily on, without replacing the kernel.
+the LEDs off or assign each receiver slot to its matching player LED (slot 1 →
+LED 1, through slot 4 → LED 4), without replacing the kernel.
 
 It also includes a live controller outline showing buttons, D-pad, stick movement
 and trigger levels. The interface uses Italian when the TV locale is Italian,
@@ -21,9 +22,10 @@ supported for LED commands. Tested on an ARMv7 TV with Linux 4.4.3 and receiver
 Install the `.ipk`, connect the receiver, turn on the controller, then open
 **Xbox LED** and select a LED mode or **Controller test**.
 
-LED commands briefly detach and restore the receiver's gamepad interfaces and
-apply to all controllers on that receiver. Restart the Moonlight session if
-needed. Repeat the command after powering on or reconnecting the controller.
+LED commands briefly detach and restore the receiver's gamepad interfaces.
+The LEDs-off command applies to every slot; auto-assignment sets each slot's
+matching player LED independently. Restart the Moonlight session if needed.
+Repeat the command after powering on or reconnecting the controller.
 The tester only reads input and stops when you leave the test screen. Nothing
 is installed as a boot-time helper.
 
@@ -35,7 +37,7 @@ With Node.js 20+:
 npm ci
 npm test
 npm run package
-npx ares-install --device YOUR_TV dist/com.paolo.xboxleds_1.2.0_all.ipk
+npx ares-install --device YOUR_TV dist/com.paolo.xboxleds_1.4.0_all.ipk
 ```
 
 Configure `YOUR_TV` with `ares-setup-device` first. Packages are generated in

@@ -1,10 +1,10 @@
 from __future__ import print_function
 import ctypes as C
 import sys
+from led_map import command_for_slot
 
-command = int(sys.argv[1])
-if command not in (0, 6):
-    raise ValueError("Only LED off (0) and player 1 (6) are supported")
+mode = sys.argv[1]
+command_for_slot(mode, 1)
 
 usb = C.CDLL("/lib/libusb-1.0.so.0")
 usb.libusb_init.argtypes = [C.POINTER(C.c_void_p)]
@@ -35,8 +35,11 @@ try:
             break
     if not handle:
         raise RuntimeError("Xbox 360 receiver not found. Connect the USB receiver.")
-    packet = (C.c_ubyte * 12)(0, 0, 8, 0x40 + command, 0, 0, 0, 0, 0, 0, 0, 0)
     for interface, endpoint in ((0, 1), (2, 3), (4, 5), (6, 7)):
+        slot = interface // 2 + 1
+        slot_command = command_for_slot(mode, slot)
+        packet = (C.c_ubyte * 12)(
+            0, 0, 8, 0x40 + slot_command, 0, 0, 0, 0, 0, 0, 0, 0)
         detached = False
         claimed = False
         try:
@@ -53,7 +56,7 @@ try:
                 "LED transfer")
             if transferred.value != len(packet):
                 raise RuntimeError("Incomplete LED command")
-            print("Slot %d: LED command %d sent" % (interface // 2 + 1, command))
+            print("Slot %d: LED command %d sent" % (slot, slot_command))
         finally:
             try:
                 if claimed:

@@ -2,7 +2,7 @@ module.exports = function (execFile, getuid, scriptPath) {
     var busy = false;
     return function (message) {
         var mode = message.payload && message.payload.mode;
-        if (mode !== "off" && mode !== "player1") {
+        if (mode !== "off" && mode !== "auto") {
             message.respond({returnValue: false, errorKey: "invalidMode", errorText: "Invalid LED mode."});
             return;
         }
@@ -18,7 +18,8 @@ module.exports = function (execFile, getuid, scriptPath) {
             return;
         }
         busy = true;
-        execFile("/usr/bin/python", [scriptPath, mode === "off" ? "0" : "6"], {
+        var command = mode === "off" ? "0" : "auto";
+        execFile("/usr/bin/python", [scriptPath, command], {
             timeout: 15000,
             maxBuffer: 16384
         }, function (error, stdout, stderr) {

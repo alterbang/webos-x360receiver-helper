@@ -1,6 +1,6 @@
 (function () {
     "use strict";
-    var buttons = [document.getElementById("player1"), document.getElementById("off"),
+    var buttons = [document.getElementById("off"), document.getElementById("auto"),
         document.getElementById("test")];
     var status = document.getElementById("status");
     var busy = false;
@@ -45,7 +45,8 @@
                     parameters: {mode: mode},
                     timeout: 20,
                     onSuccess: function () {
-                        finish(t(mode === "off" ? "sentOff" : "sentPlayer1"), false, button);
+                        var resultKey = mode === "off" ? "sentOff" : "sentAuto";
+                        finish(t(resultKey), false, button);
                     },
                     onFailure: function (response) {
                         finish(window.i18n.error(response, "usbError"), true, button);
@@ -146,8 +147,8 @@
         }, failure);
     }
 
-    buttons[0].onclick = function () { setLed("player1", buttons[0]); };
-    buttons[1].onclick = function () { setLed("off", buttons[1]); };
+    buttons[0].onclick = function () { setLed("off", buttons[0]); };
+    buttons[1].onclick = function () { setLed("auto", buttons[1]); };
     buttons[2].onclick = openTest;
     document.getElementById("test-close").onclick = closeTest;
     window.addEventListener("beforeunload", function () {
