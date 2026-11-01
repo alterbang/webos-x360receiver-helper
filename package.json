@@ -1,0 +1,12 @@
+{
+  "name": "xbox-led-webos",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "package": "ares-package app service -o dist"
+  },
+  "devDependencies": {
+    "@webos-tools/cli": "3.2.6"
+  }
+}

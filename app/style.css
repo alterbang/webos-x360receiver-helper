@@ -1,0 +1,31 @@
+html, body { margin: 0; min-height: 100%; background: #101713; color: #f3fff5; }
+body { font-family: Arial, sans-serif; font-size: 30px; }
+main { max-width: 1500px; margin: 80px auto; padding: 0 80px; }
+[hidden] { display: none !important; }
+.badge { color: #81df8a; font-size: 24px; letter-spacing: 4px; }
+h1 { margin: 18px 0 30px; font-size: 88px; }
+p { color: #c4d0c6; line-height: 1.5; }
+.buttons { display: flex; margin: 48px 0 36px; }
+button { background: #243c2b; border: 4px solid transparent; border-radius: 16px;
+    color: white; font-size: 36px; padding: 28px 48px; margin-right: 24px; cursor: pointer; }
+button:focus { outline: none; border-color: #a0f2a8; background: #35673e; }
+button:disabled { opacity: 0.55; cursor: wait; }
+#status { min-height: 80px; color: #a0f2a8; white-space: pre-wrap; overflow-wrap: break-word; }
+#status.error { color: #ffa99d; }
+footer { margin-top: 40px; color: #93a198; font-size: 23px; line-height: 1.6; }
+#test-panel { margin-top: 35px; }
+#test-panel h1 { font-size: 52px; margin: 15px 0; }
+#test-panel p { margin: 12px 0; font-size: 26px; }
+#pad { display: block; width: 950px; height: 513px; margin: 0 auto; }
+.shell { fill: #18261e; stroke: #879c8e; stroke-width: 4; }
+.control { fill: #243c2b; stroke: #879c8e; stroke-width: 3; }
+.control text, .label { fill: #f3fff5; stroke: none; text-anchor: middle; font-size: 23px; }
+.face text { font-size: 30px; font-weight: bold; }
+.a { stroke: #73d886; } .b { stroke: #ef8080; }
+.x { stroke: #79b8fa; } .y { stroke: #ecd477; }
+.control.active { fill: #64b96f; stroke: #d4ffda; stroke-width: 5; }
+.stick-dot { fill: #a0f2a8; pointer-events: none; }
+.dpad-center { fill: #243c2b; }
+#pad-values { text-align: center; font-size: 25px; min-height: 60px; line-height: 1.5; }
+#test-close { font-size: 26px; padding: 16px 30px; }
+#test-panel footer { margin-top: 14px; font-size: 20px; }

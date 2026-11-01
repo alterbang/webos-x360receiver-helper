@@ -1,0 +1,9 @@
+{
+  "id": "com.paolo.xboxleds.service",
+  "description": "Xbox 360 controller LED control",
+  "services": [
+    {
+      "name": "com.paolo.xboxleds.service"
+    }
+  ]
+}

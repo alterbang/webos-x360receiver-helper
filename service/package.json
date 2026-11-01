@@ -1,0 +1,6 @@
+{
+  "name": "com.paolo.xboxleds.service",
+  "version": "1.1.0",
+  "description": "Manual Xbox 360 controller LED control",
+  "main": "service.js"
+}
