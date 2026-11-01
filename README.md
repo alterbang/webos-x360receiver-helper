@@ -24,8 +24,8 @@ Install the `.ipk`, connect the receiver, turn on the controller, then open
 
 LED commands briefly detach and restore the receiver's gamepad interfaces.
 The LEDs-off command applies to every slot; auto-assignment sets each slot's
-matching player LED independently. Restart the Moonlight session if needed.
-Repeat the command after powering on or reconnecting the controller.
+matching player LED independently. Reopen the app using the controller if
+needed. Repeat the command after powering on or reconnecting the controller.
 The tester only reads input and stops when you leave the test screen. Nothing
 is installed as a boot-time helper.
 
@@ -37,7 +37,7 @@ With Node.js 20+:
 npm ci
 npm test
 npm run package
-npx ares-install --device YOUR_TV dist/com.paolo.xboxleds_1.4.0_all.ipk
+npx ares-install --device YOUR_TV dist/com.paolo.xboxleds_1.5.0_all.ipk
 ```
 
 Configure `YOUR_TV` with `ares-setup-device` first. Packages are generated in

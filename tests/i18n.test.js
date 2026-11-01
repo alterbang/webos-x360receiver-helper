@@ -22,3 +22,12 @@ test("static labels and service errors are translated in both languages", () => 
         assert.equal(translator.error({errorText: "native diagnostic"}, "usbError"), translator.t("usbError"));
     }
 });
+
+test("automatic assignment is the first action and instructions are app-neutral", () => {
+    const html = fs.readFileSync("app/index.html", "utf8");
+    const buttons = [...html.matchAll(/<button id="([^"]+)"/g)].map(match => match[1]);
+    assert.deepEqual(buttons.slice(0, 3), ["auto", "off", "test"]);
+    for (const file of ["app/index.html", "app/i18n.js", "README.md"]) {
+        assert.doesNotMatch(fs.readFileSync(file, "utf8"), /Moonlight/i);
+    }
+});
