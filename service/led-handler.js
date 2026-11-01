@@ -3,18 +3,18 @@ module.exports = function (execFile, getuid, scriptPath) {
     return function (message) {
         var mode = message.payload && message.payload.mode;
         if (mode !== "off" && mode !== "player1") {
-            message.respond({returnValue: false, errorText: "Modalita LED non valida."});
+            message.respond({returnValue: false, errorKey: "invalidMode", errorText: "Invalid LED mode."});
             return;
         }
         if (getuid() !== 0) {
             message.respond({
                 returnValue: false,
-                errorText: "Permessi root mancanti. Riapri Xbox LED con Homebrew Channel installato."
+                errorKey: "rootError", errorText: "Root permissions required."
             });
             return;
         }
         if (busy) {
-            message.respond({returnValue: false, errorText: "Un comando LED e gia in corso."});
+            message.respond({returnValue: false, errorKey: "busy", errorText: "A LED command is already running."});
             return;
         }
         busy = true;
@@ -26,6 +26,7 @@ module.exports = function (execFile, getuid, scriptPath) {
             if (error) {
                 message.respond({
                     returnValue: false,
+                    errorKey: "usbError",
                     errorText: (stderr || error.message).trim()
                 });
                 return;

@@ -11,15 +11,15 @@
     <main id="led-panel">
         <div class="badge">XBOX 360 WIRELESS</div>
         <h1>Xbox LED</h1>
-        <p>Collega il ricevitore USB e accendi il controller.<br>
+        <p data-i18n="intro">Collega il ricevitore USB e accendi il controller.<br>
         Poi scegli come illuminare il pad.</p>
         <div class="buttons">
-            <button id="player1" type="button">LED 1 fisso</button>
-            <button id="off" type="button">LED spenti</button>
-            <button id="test" type="button">Test del pad</button>
+            <button id="player1" type="button" data-i18n="player1">LED 1 fisso</button>
+            <button id="off" type="button" data-i18n="off">LED spenti</button>
+            <button id="test" type="button" data-i18n="test">Test del pad</button>
         </div>
-        <div id="status" role="status" aria-live="polite">Pronto.</div>
-        <footer>
+        <div id="status" role="status" aria-live="polite" data-i18n="ready">Pronto.</div>
+        <footer data-i18n="notes">
             Richiede TV con root e Homebrew Channel.<br>
             Il pad si interrompe brevemente durante il comando.
             Se necessario, riapri la sessione Moonlight.<br>
@@ -29,9 +29,9 @@
         </footer>
     </main>
     <main id="test-panel" hidden>
-        <div class="badge">TEST IN TEMPO REALE</div>
-        <h1>Prova il controller</h1>
-        <p id="pad-status" role="status">Preparazione della lettura...</p>
+        <div class="badge" data-i18n="testBadge">TEST IN TEMPO REALE</div>
+        <h1 data-i18n="testTitle">Prova il controller</h1>
+        <p id="pad-status" role="status" data-i18n="reading">Preparazione della lettura...</p>
         <svg id="pad" viewBox="0 0 1000 540" aria-label="Profilo del controller con comandi attivi">
             <path class="shell" d="M250 95 Q185 70 145 145 L65 405 Q40 490 110 500
                 Q160 510 215 425 L280 340 L720 340 L785 425 Q840 510 890 500
@@ -67,11 +67,12 @@
             <g class="control face x" id="pad-x"><circle cx="710" cy="215" r="28"/><text x="710" y="226">X</text></g>
             <g class="control face y" id="pad-y"><circle cx="760" cy="165" r="28"/><text x="760" y="176">Y</text></g>
         </svg>
-        <div id="pad-values">Premi un tasto o muovi uno stick.</div>
-        <button id="test-close" type="button">Torna ai LED</button>
-        <footer>Lettura passiva: non blocca il pad e non cambia i LED.
+        <div id="pad-values" data-i18n="press">Premi un tasto o muovi uno stick.</div>
+        <button id="test-close" type="button" data-i18n="close">Torna ai LED</button>
+        <footer data-i18n="testNotes">Lettura passiva: non blocca il pad e non cambia i LED.
             Con piu pad, viene mostrato quello usato per ultimo.</footer>
     </main>
+    <script src="i18n.js"></script>
     <script src="pad-state.js"></script>
     <script src="app.js"></script>
 </body>

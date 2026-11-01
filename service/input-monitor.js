@@ -39,18 +39,19 @@ module.exports = function (spawn, getuid, scriptPath) {
             reader = null;
             latest = null;
             Object.keys(clients).forEach(function (token) {
-                clients[token].cancel({returnValue: false, errorText: text});
+                clients[token].cancel({returnValue: false, errorKey: "inputError", errorText: text});
             });
             clients = {};
         }
         child.on("error", function (error) { failed(error.message); });
-        child.on("exit", function () { failed(stderr || "Lettura del pad interrotta."); });
+        child.on("exit", function () { failed(stderr || "Input reader stopped."); });
     }
 
     return {
         subscribe: function (message) {
             if (!message.isSubscription || getuid() !== 0) {
-                message.respond({returnValue: false, errorText: "Richiesti root e subscribe:true."});
+                message.respond({returnValue: false, errorKey: "rootError",
+                    errorText: "Root and subscribe:true required."});
                 return;
             }
             clients[message.uniqueToken] = message;

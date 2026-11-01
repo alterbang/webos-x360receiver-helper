@@ -1,6 +1,6 @@
 {
   "id": "com.paolo.xboxleds",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "vendor": "Xbox LED",
   "type": "web",
   "main": "index.html",

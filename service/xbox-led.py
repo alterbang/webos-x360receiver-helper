@@ -34,7 +34,7 @@ try:
         if handle:
             break
     if not handle:
-        raise RuntimeError("Ricevitore Xbox 360 non trovato. Collega il ricevitore USB.")
+        raise RuntimeError("Xbox 360 receiver not found. Connect the USB receiver.")
     packet = (C.c_ubyte * 12)(0, 0, 8, 0x40 + command, 0, 0, 0, 0, 0, 0, 0, 0)
     for interface, endpoint in ((0, 1), (2, 3), (4, 5), (6, 7)):
         detached = False

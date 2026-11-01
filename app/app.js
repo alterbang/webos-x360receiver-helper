@@ -8,6 +8,7 @@
     var testing = false;
     var selectedSlot = null;
     var eventCounts = {};
+    var t = window.i18n.t;
 
     function elevate(success, failure) {
         webOS.service.request("luna://org.webosbrew.hbchannel.service", {
@@ -30,30 +31,28 @@
     function setLed(mode, button) {
         if (busy) { return; }
         if (!window.webOS || !webOS.service) {
-            finish("Apri questa applicazione sulla TV webOS.", true, button);
+            finish(t("tvOnly"), true, button);
             return;
         }
         busy = true;
         buttons.forEach(function (item) { item.disabled = true; });
         status.className = "";
-        status.textContent = "Preparazione dei permessi USB...";
+        status.textContent = t("permissions");
         elevate(function () {
-                status.textContent = "Invio del comando al ricevitore...";
+                status.textContent = t("sending");
                 webOS.service.request("luna://com.paolo.xboxleds.service", {
                     method: "setLed",
                     parameters: {mode: mode},
                     timeout: 20,
                     onSuccess: function () {
-                        finish(mode === "off" ? "Comando inviato: LED spenti." :
-                            "Comando inviato: LED 1 fisso.", false, button);
+                        finish(t(mode === "off" ? "sentOff" : "sentPlayer1"), false, button);
                     },
                     onFailure: function (response) {
-                        finish(response.errorText || "Comando USB non riuscito.", true, button);
+                        finish(window.i18n.error(response, "usbError"), true, button);
                     }
                 });
             }, function (response) {
-                finish("Permessi USB non disponibili. Verifica Homebrew Channel e root.\n" +
-                    (response.errorText || ""), true, button);
+                finish(t("rootError"), true, button);
             });
     }
 
@@ -73,7 +72,7 @@
             clearPad();
             selectedSlot = null;
             eventCounts = {};
-            label.textContent = "Ricevitore non trovato. Collega il ricevitore USB.";
+            label.textContent = t("receiverMissing");
             document.getElementById("pad-values").textContent = "";
             return;
         }
@@ -99,14 +98,14 @@
             "translate(" + state.left[0] * 30 + " " + state.left[1] * 30 + ")");
         document.getElementById("right-dot").setAttribute("transform",
             "translate(" + state.right[0] * 30 + " " + state.right[1] * 30 + ")");
-        label.textContent = "Ricevitore presente | Slot " + selected.slot +
-            (selected.events ? " | Input ricevuti: " + selected.events : " | Premi un tasto del pad");
+        label.textContent = t("receiverPresent") + selected.slot +
+            (selected.events ? t("events") + selected.events : t("pressPad"));
         var pressed = Object.keys(state.buttons).filter(function (name) { return state.buttons[name]; });
         document.getElementById("pad-values").textContent =
-            "Tasti: " + (pressed.join(", ").toUpperCase() || "-") +
+            t("keys") + (pressed.join(", ").toUpperCase() || "-") +
             " | LT " + Math.round(state.lt * 100) + "% | RT " + Math.round(state.rt * 100) + "%\n" +
-            "Stick L: " + state.left.map(function (v) { return v.toFixed(2); }).join(", ") +
-            " | Stick R: " + state.right.map(function (v) { return v.toFixed(2); }).join(", ");
+            t("leftStick") + state.left.map(function (v) { return v.toFixed(2); }).join(", ") +
+            " | " + t("rightStick") + state.right.map(function (v) { return v.toFixed(2); }).join(", ");
     }
 
     function closeTest() {
@@ -126,15 +125,16 @@
         document.getElementById("led-panel").hidden = true;
         document.getElementById("test-panel").hidden = false;
         document.getElementById("test-close").focus();
-        document.getElementById("pad-status").textContent = "Preparazione della lettura...";
+        document.getElementById("pad-status").textContent = t("reading");
+        document.getElementById("pad-values").textContent = t("press");
         function failure(response) {
             if (testing) {
                 document.getElementById("pad-status").textContent =
-                    response.errorText || "Lettura non disponibile. Riapri il test.";
+                    window.i18n.error(response, "inputError");
             }
         }
         if (!window.webOS || !webOS.service) {
-            failure({errorText: "Apri questa applicazione sulla TV webOS."});
+            failure({errorKey: "tvOnly"});
             return;
         }
         elevate(function () {
