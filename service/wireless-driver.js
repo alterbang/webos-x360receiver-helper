@@ -18,6 +18,15 @@ module.exports = function (fs, spawn, kill, getuid, binary, directory) {
         } catch (error) { return null; }
     }
 
+    function blockedInKernel(pid) {
+        try {
+            return fs.readdirSync("/proc/" + pid + "/task").some(function (task) {
+                return fs.readFileSync("/proc/" + pid + "/task/" + task + "/wchan", "utf8")
+                    .indexOf("uinput_request_submit") !== -1;
+            });
+        } catch (error) { return false; }
+    }
+
     function initialized() {
         try { return fs.readFileSync(logFile, "utf8").indexOf("Dongle initialized") !== -1; }
         catch (error) { return false; }
@@ -60,6 +69,8 @@ module.exports = function (fs, spawn, kill, getuid, binary, directory) {
         }
         if (action === "stop") {
             if (!pid) { respond(message); return; }
+            // Signals cannot safely recover a thread blocked inside uinput teardown.
+            if (blockedInKernel(pid)) { respond(message, "driverStuck"); return; }
             busy = true;
             try {
                 kill(pid, "SIGTERM");

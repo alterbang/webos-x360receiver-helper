@@ -20,20 +20,21 @@ if [ -z "${ZIG:-}" ]; then
         ZIG="$build/zig-linux-x86_64-0.13.0/zig"
     fi
 fi
-if [ ! -d "$build/xow" ]; then
-    curl -fLsS "https://codeload.github.com/medusalix/xow/tar.gz/$revision" -o "$build/xow.tar.gz"
+patches="xow-legacy-uinput.patch xow-no-rumble.patch xow-diagnostics.patch \
+    xow-xone-idle-time.patch xow-safe-uinput-teardown.patch"
+stamp=$(cd "$root/scripts" && cat $patches | sha256sum | cut -d' ' -f1)
+if [ ! -f "$build/xow/.patches" ] || [ "$(cat "$build/xow/.patches")" != "$stamp" ]; then
+    if [ ! -f "$build/xow.tar.gz" ]; then
+        curl -fLsS "https://codeload.github.com/medusalix/xow/tar.gz/$revision" -o "$build/xow.tar.gz"
+    fi
+    rm -rf "$build/xow"
     mkdir "$build/xow"
     tar -xf "$build/xow.tar.gz" -C "$build/xow" --strip-components=1
-    patch -d "$build/xow" -p1 < "$root/scripts/xow-legacy-uinput.patch"
-fi
-for file in xow-no-rumble.patch xow-diagnostics.patch; do
-    if patch -d "$build/xow" -p1 --dry-run --forward --batch < "$root/scripts/$file" >/dev/null 2>&1; then
+    for file in $patches; do
         patch -d "$build/xow" -p1 --forward --batch < "$root/scripts/$file"
-    elif ! patch -d "$build/xow" -p1 --dry-run --reverse --batch < "$root/scripts/$file" >/dev/null 2>&1; then
-        echo "Cannot apply or verify $file." >&2
-        exit 1
-    fi
-done
+    done
+    printf '%s\n' "$stamp" > "$build/xow/.patches"
+fi
 if [ ! -d "$build/libusb-1.0.27" ]; then
     curl -fLsS https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2 -o "$build/libusb.tar.bz2"
     tar -xf "$build/libusb.tar.bz2" -C "$build"
@@ -55,8 +56,8 @@ make -j2 xow BUILD=RELEASE VERSION="webos-$revision" \
 # Include corresponding source and build recipe with the GPL/LGPL executable.
 cp LICENSE "$out/XOW-LICENSE"
 cp "$build/libusb-1.0.27/COPYING" "$out/LIBUSB-LICENSE"
-cp "$root/scripts/build-wireless.sh" "$root/scripts/xow-legacy-uinput.patch" \
-    "$root/scripts/xow-no-rumble.patch" "$root/scripts/xow-diagnostics.patch" "$out/"
+cp "$root/scripts/build-wireless.sh" "$out/"
+for file in $patches; do cp "$root/scripts/$file" "$out/"; done
 cp "$build/xow.tar.gz" "$out/xow-source.tar.gz"
 cp "$build/libusb.tar.bz2" "$out/libusb-source.tar.bz2"
 zigdir=$(dirname "$ZIG")

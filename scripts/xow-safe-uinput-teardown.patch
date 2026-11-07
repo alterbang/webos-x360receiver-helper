@@ -1,0 +1,17 @@
+--- a/controller/input.cpp
++++ b/controller/input.cpp
+@@ -57,10 +57,10 @@
+         Log::info("Input teardown: feedback reader stopped; destroying device");
+     }
+ 
+-    if (
+-        ioctl(file, UI_DEV_DESTROY) < 0 ||
+-        close(file) < 0
+-    ) {
++    // Linux < 4.13 can deadlock if UI_DEV_DESTROY flushes uploaded effects.
++    // Closing the descriptor destroys the device without holding the lock.
++    if (close(file) < 0)
++    {
+         Log::error("Error closing device: %s", strerror(errno));
+     }
+     else if (std::getenv("XOW_DIAGNOSTICS"))

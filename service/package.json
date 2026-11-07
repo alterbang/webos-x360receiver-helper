@@ -1,6 +1,6 @@
 {
   "name": "com.paolo.xboxleds.service",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Xbox controller LEDs and experimental wireless driver",
   "main": "service.js"
 }

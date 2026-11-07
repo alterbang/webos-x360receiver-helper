@@ -1,0 +1,27 @@
+--- a/dongle/mt76.h
++++ b/dongle/mt76.h
+@@ -106,6 +106,7 @@
+         FW_MAC_ADDRESS_SET = 0,
+         FW_CLIENT_ADD = 1,
+         FW_CLIENT_REMOVE = 2,
++        FW_IDLE_TIME_SET = 5,
+         FW_CHANNEL_CANDIDATES_SET = 7,
+     };
+ 
+--- a/dongle/mt76.cpp
++++ b/dongle/mt76.cpp
+@@ -840,6 +840,14 @@
+         throw Mt76Exception("Failed to set MAC address");
+     }
+ 
++    // Ported from xone to keep idle controllers associated
++    const Bytes idleTime = {64, 0, 0, 0};
++
++    if (!sendFirmwareCommand(FW_IDLE_TIME_SET, idleTime))
++    {
++        throw Mt76Exception("Failed to set idle time");
++    }
++
+     // Reset necessary for reliable WLAN associations
+     controlWrite(MT_MAC_SYS_CTRL, 0);
+     controlWrite(MT_RF_BYPASS_0, 0);

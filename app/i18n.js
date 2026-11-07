@@ -35,6 +35,7 @@
             driverError: "Wireless driver failed. Check the adapter and restart the driver.",
             driverNotReady: "Receiver did not initialize. Reconnect it and restart the driver.",
             driverNotRunning: "Start the driver before pairing.", driverBusy: "A driver operation is already running.",
+            driverStuck: "Driver blocked in the TV kernel. Fully reboot the TV; do not stop it again.",
             invalidDriverAction: "Invalid driver operation.",
             requestTimeout: "Service did not respond. Reopen the section and retry.",
             serviceError: "Invalid service response. Reopen the app."
@@ -73,6 +74,7 @@
             driverError: "Errore del driver wireless. Controlla il ricevitore e riavvia il driver.",
             driverNotReady: "Ricevitore non inizializzato. Ricollegalo e riavvia il driver.",
             driverNotRunning: "Avvia il driver prima dell'associazione.", driverBusy: "Un'operazione del driver e gia in corso.",
+            driverStuck: "Driver bloccato nel kernel della TV. Riavvia completamente la TV; non arrestarlo di nuovo.",
             invalidDriverAction: "Operazione driver non valida.",
             requestTimeout: "Il servizio non risponde. Riapri la sezione e riprova.",
             serviceError: "Risposta del servizio non valida. Riapri l'app."

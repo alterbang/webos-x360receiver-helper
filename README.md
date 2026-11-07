@@ -58,14 +58,21 @@ The driver stays active when you leave the test or close the app, so other apps
 can use the controller. **Stop driver** stops it; a TV reboot also stops it.
 Nothing starts automatically at boot. Stop the driver before unplugging the
 adapter. Logs are kept locally in `/media/developer/xbox-wireless/driver.log`
-and may contain controller identifiers. Version 1.6.2 re-enables force feedback
-and enables targeted diagnostics (`XOW_DIAGNOSTICS=1`): disassociation frames,
-firmware `CLIENT_LOST` events, raw radio samples at most every five seconds,
-and feedback teardown steps. Raw RSSI bytes are not calibrated dBm readings.
-Version 1.6.1's no-rumble trial still experienced wireless disconnections,
-but recovered; an earlier session with force feedback blocked in
-`uinput_request_submit` and also blocked input-device enumeration. That separate
-force-feedback risk remains unresolved. Compatibility with individual games
+and may contain controller identifiers. Version 1.7.0 keeps force feedback and
+targeted diagnostics (`XOW_DIAGNOSTICS=1`): disassociation frames, firmware
+`CLIENT_LOST` events, raw radio samples at most every five seconds, and feedback
+teardown steps. Raw RSSI bytes are not calibrated dBm readings.
+
+Version 1.7.0 ports xone's receiver idle-time command (`0x05`, value 64), sent
+during initialization to reduce disconnections while the controller is idle.
+It also avoids a Linux 4.4 uinput deadlock: `UI_DEV_DESTROY` holds the uinput
+lock while removing a device with uploaded force-feedback effects, and the
+effect erase then waits for the same lock. The driver now closes the uinput
+descriptor instead, which destroys the device without holding that lock. If an
+older driver is already blocked in `uinput_request_submit`, **Stop driver**
+refuses to signal it; fully reboot the TV instead. These fixes still need a
+long on-TV pause test.
+Compatibility with individual games
 and other adapter/controller firmware versions remains unverified.
 The original Xbox 360 LED controls and test remain separate.
 
@@ -77,7 +84,7 @@ With Node.js 20+, Linux, `curl`, `tar`, `patch`, and `make`:
 npm ci
 npm test
 npm run package
-npx ares-install --device YOUR_TV dist/com.paolo.xboxleds_1.6.2_all.ipk
+npx ares-install --device YOUR_TV dist/com.paolo.xboxleds_1.7.0_all.ipk
 ```
 
 Configure `YOUR_TV` with `ares-setup-device` first. Packages are generated in

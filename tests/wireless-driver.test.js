@@ -17,7 +17,14 @@ function fixture(uid = 0) {
         },
         writeFileSync(name, value) { files[name] = value; },
         chmodSync() {}, openSync() { return 10; }, closeSync() {},
-        existsSync(name) { return name in files; }
+        existsSync(name) { return name in files; },
+        readdirSync(name) {
+            const prefix = name + "/";
+            const tasks = Object.keys(files).filter(file => file.startsWith(prefix) && file.endsWith("/wchan"))
+                .map(file => file.slice(prefix.length).split("/")[0]);
+            if (!tasks.length) { throw new Error("missing"); }
+            return tasks;
+        }
     };
     const spawn = (file, args, options) => {
         launches++;
@@ -55,6 +62,17 @@ test("wireless driver starts once, survives status calls, pairs and stops explic
     assert.deepEqual(f.signals, [[42, "SIGUSR1"]]);
     assert.equal((await f.call("stop")).running, false);
     assert.deepEqual(f.signals[1], [42, "SIGTERM"]);
+});
+
+test("stop never signals a driver blocked in uinput teardown", async () => {
+    const f = fixture();
+    await f.call("start");
+    f.files["/proc/42/task/42/wchan"] = "poll_schedule_timeout";
+    f.files["/proc/42/task/48/wchan"] = "uinput_request_submit.part.0";
+    const state = await f.call("stop");
+    assert.equal(state.errorKey, "driverStuck");
+    assert.equal(state.running, true);
+    assert.deepEqual(f.signals, []);
 });
 
 test("missing firmware, unprivileged actions and stale PIDs never start or signal a driver", async () => {
