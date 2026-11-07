@@ -12,6 +12,13 @@ button:focus { outline: none; border-color: #a0f2a8; background: #35673e; }
 button:disabled { opacity: 0.55; cursor: wait; }
 #status { min-height: 80px; color: #a0f2a8; white-space: pre-wrap; overflow-wrap: break-word; }
 #status.error { color: #ffa99d; }
+#wireless-status { min-height: 80px; color: #a0f2a8; white-space: pre-line; }
+#wireless-status.error { color: #ffa99d; }
+#wireless-panel h1 { font-size: 60px; }
+#wireless-panel .buttons { flex-wrap: wrap; }
+#wireless-panel button { font-size: 28px; padding: 20px 26px; }
+#wireless-panel .buttons button { margin-bottom: 16px; }
+#wireless { font-size: 28px; padding: 18px 30px; }
 footer { margin-top: 40px; color: #93a198; font-size: 23px; line-height: 1.6; white-space: pre-line; }
 #test-panel { margin-top: 35px; }
 #test-panel h1 { font-size: 52px; margin: 15px 0; }

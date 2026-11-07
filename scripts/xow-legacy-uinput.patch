@@ -1,0 +1,62 @@
+diff --git a/controller/input.cpp b/controller/input.cpp
+--- a/controller/input.cpp
++++ b/controller/input.cpp
+@@ -73,18 +73,10 @@ void InputDevice::addAxis(uint16_t code, AxisConfig config)
+         throw InputException("Error adding axis code");
+     }
+ 
+-    uinput_abs_setup setup = {};
+-
+-    setup.code = code;
+-    setup.absinfo.minimum = config.minimum;
+-    setup.absinfo.maximum = config.maximum;
+-    setup.absinfo.fuzz = config.fuzz;
+-    setup.absinfo.flat = config.flat;
+-
+-    if (ioctl(file, UI_ABS_SETUP, &setup) < 0)
+-    {
+-        throw InputException("Error setting up axis");
+-    }
++    legacySetup.absmin[code] = config.minimum;
++    legacySetup.absmax[code] = config.maximum;
++    legacySetup.absfuzz[code] = config.fuzz;
++    legacySetup.absflat[code] = config.flat;
+ }
+ 
+ void InputDevice::addFeedback(uint16_t code)
+@@ -99,18 +91,16 @@ void InputDevice::addFeedback(uint16_t code)
+ 
+ void InputDevice::create(std::string name, DeviceConfig config)
+ {
+-    uinput_setup setup = {};
+-
+-    setup.id.bustype = BUS_USB;
+-    setup.id.vendor = config.vendorId;
+-    setup.id.product = config.productId;
+-    setup.id.version = config.version;
+-    setup.ff_effects_max = INPUT_MAX_FF_EFFECTS;
++    legacySetup.id.bustype = BUS_USB;
++    legacySetup.id.vendor = config.vendorId;
++    legacySetup.id.product = config.productId;
++    legacySetup.id.version = config.version;
++    legacySetup.ff_effects_max = INPUT_MAX_FF_EFFECTS;
+ 
+-    std::copy(name.begin(), name.end(), std::begin(setup.name));
++    std::strncpy(legacySetup.name, name.c_str(), sizeof(legacySetup.name) - 1);
+ 
+     if (
+-        ioctl(file, UI_DEV_SETUP, &setup) < 0 ||
++        write(file, &legacySetup, sizeof(legacySetup)) != sizeof(legacySetup) ||
+         ioctl(file, UI_DEV_CREATE) < 0
+     ) {
+         throw InputException("Error creating device");
+diff --git a/controller/input.h b/controller/input.h
+--- a/controller/input.h
++++ b/controller/input.h
+@@ -88,6 +88,7 @@ private:
+     void handleEvent(input_event event);
+ 
+     int file;
++    uinput_user_dev legacySetup = {};
+     InterruptibleReader eventReader;
+     std::thread eventThread;

@@ -19,7 +19,25 @@
             receiverPresent: "Receiver present | Slot ", events: " | Input events: ",
             pressPad: " | Press a controller button", keys: "Buttons: ", leftStick: "Left stick: ",
             rightStick: "Right stick: ", inputError: "Input unavailable. Reopen the test.",
-            invalidMode: "Invalid LED mode.", busy: "A LED command is already running."
+            invalidMode: "Invalid LED mode.", busy: "A LED command is already running.",
+            wirelessSection: "Xbox One / Series", wirelessTitle: "Xbox One / Series receiver",
+            wirelessIntro: "Experimental Microsoft wireless adapter support. Start the driver, then pair your controller.\nVibration enabled; targeted diagnostic logging active.",
+            driverStart: "Start driver", driverPair: "Pair controller", driverStop: "Stop driver",
+            wirelessClose: "Back to Xbox 360", wirelessTestClose: "Back to Xbox One / Series",
+            wirelessTestTitle: "Test Xbox One / Series",
+            wirelessNotes: "The driver stays active when you close the test or app, until Stop or a TV reboot.\nStop it here before unplugging the adapter. No automatic startup.\nMicrosoft firmware must be provisioned separately; see the README.",
+            driverStopped: "Driver stopped.", driverRunning: "Driver active. Ready to pair or test.",
+            driverWaiting: "Driver waiting for the receiver.", driverWorking: "Preparing wireless driver...",
+            pairingEnabled: "Pairing enabled. Hold the controller pairing button.",
+            wirelessMissing: "No wireless controller connected. Start the driver and pair your controller.",
+            firmwareMissing: "Microsoft firmware is missing. Run scripts/provision-wireless-firmware.sh as described in the README.",
+            driverMissing: "Driver missing from package. Rebuild with npm run package.",
+            driverError: "Wireless driver failed. Check the adapter and restart the driver.",
+            driverNotReady: "Receiver did not initialize. Reconnect it and restart the driver.",
+            driverNotRunning: "Start the driver before pairing.", driverBusy: "A driver operation is already running.",
+            invalidDriverAction: "Invalid driver operation.",
+            requestTimeout: "Service did not respond. Reopen the section and retry.",
+            serviceError: "Invalid service response. Reopen the app."
         },
         it: {
             intro: "Collega il ricevitore USB e accendi il controller.\nPoi scegli come illuminare il pad.",
@@ -39,7 +57,25 @@
             receiverPresent: "Ricevitore presente | Slot ", events: " | Input ricevuti: ",
             pressPad: " | Premi un tasto del pad", keys: "Tasti: ", leftStick: "Stick L: ",
             rightStick: "Stick R: ", inputError: "Lettura non disponibile. Riapri il test.",
-            invalidMode: "Modalita LED non valida.", busy: "Un comando LED e gia in corso."
+            invalidMode: "Modalita LED non valida.", busy: "Un comando LED e gia in corso.",
+            wirelessSection: "Xbox One / Series", wirelessTitle: "Ricevitore Xbox One / Series",
+            wirelessIntro: "Supporto sperimentale per il ricevitore wireless Microsoft. Avvia il driver, poi associa il controller.\nVibrazione abilitata; log diagnostici mirati attivi.",
+            driverStart: "Avvia driver", driverPair: "Associa controller", driverStop: "Arresta driver",
+            wirelessClose: "Torna a Xbox 360", wirelessTestClose: "Torna a Xbox One / Series",
+            wirelessTestTitle: "Prova Xbox One / Series",
+            wirelessNotes: "Il driver resta attivo quando chiudi il test o l'app, fino ad Arresta o al riavvio TV.\nArrestalo qui prima di scollegare il ricevitore. Nessun avvio automatico.\nIl firmware Microsoft va preparato separatamente; vedi il README.",
+            driverStopped: "Driver arrestato.", driverRunning: "Driver attivo. Puoi associare o provare il controller.",
+            driverWaiting: "Driver in attesa del ricevitore.", driverWorking: "Preparazione del driver wireless...",
+            pairingEnabled: "Associazione attiva. Tieni premuto il tasto di associazione del controller.",
+            wirelessMissing: "Nessun controller wireless collegato. Avvia il driver e associa il controller.",
+            firmwareMissing: "Firmware Microsoft mancante. Esegui scripts/provision-wireless-firmware.sh come descritto nel README.",
+            driverMissing: "Driver assente dal pacchetto. Ricompila con npm run package.",
+            driverError: "Errore del driver wireless. Controlla il ricevitore e riavvia il driver.",
+            driverNotReady: "Ricevitore non inizializzato. Ricollegalo e riavvia il driver.",
+            driverNotRunning: "Avvia il driver prima dell'associazione.", driverBusy: "Un'operazione del driver e gia in corso.",
+            invalidDriverAction: "Operazione driver non valida.",
+            requestTimeout: "Il servizio non risponde. Riapri la sezione e riprova.",
+            serviceError: "Risposta del servizio non valida. Riapri l'app."
         }
     };
 

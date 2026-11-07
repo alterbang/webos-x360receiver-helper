@@ -18,7 +18,8 @@
             return Math.max(-1, Math.min(1, (axes[code] || 0) / 32768));
         }
         function trigger(code) {
-            return Math.max(0, Math.min(1, (axes[code] || 0) / 255));
+            var maximum = pad.axisMax && pad.axisMax[code] > 0 ? pad.axisMax[code] : 255;
+            return Math.max(0, Math.min(1, (axes[code] || 0) / maximum));
         }
         return {
             buttons: buttons, left: [axis(0), axis(1)], right: [axis(3), axis(4)],

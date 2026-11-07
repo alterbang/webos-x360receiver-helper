@@ -1,9 +1,11 @@
 {
   "name": "xbox-led-webos",
-  "version": "1.5.0",
+  "version": "1.6.2",
   "private": true,
   "scripts": {
     "test": "node --test tests/*.test.js && python3 -m unittest discover -s tests -p 'test_*.py'",
+    "build:wireless": "sh scripts/build-wireless.sh",
+    "prepackage": "npm run build:wireless",
     "package": "ares-package app service -o dist"
   },
   "devDependencies": {

@@ -1,0 +1,37 @@
+diff --git a/controller/input.cpp b/controller/input.cpp
+--- a/controller/input.cpp
++++ b/controller/input.cpp
+@@ -20,6 +20,7 @@
+ #include "../utils/log.h"
+ 
+ #include <cstring>
++#include <cstdlib>
+ #include <unistd.h>
+ #include <fcntl.h>
+ 
+@@ -81,6 +82,11 @@
+ 
+ void InputDevice::addFeedback(uint16_t code)
+ {
++    if (std::getenv("XOW_DISABLE_RUMBLE"))
++    {
++        return;
++    }
++
+     if (
+         ioctl(file, UI_SET_EVBIT, EV_FF) < 0 ||
+         ioctl(file, UI_SET_FFBIT, code) < 0
+@@ -96,7 +102,12 @@
+     legacySetup.id.vendor = config.vendorId;
+     legacySetup.id.product = config.productId;
+     legacySetup.id.version = config.version;
+-    legacySetup.ff_effects_max = INPUT_MAX_FF_EFFECTS;
++    legacySetup.ff_effects_max = std::getenv("XOW_DISABLE_RUMBLE") ? 0 : INPUT_MAX_FF_EFFECTS;
++
++    if (!legacySetup.ff_effects_max)
++    {
++        Log::info("Force feedback disabled for webOS compatibility test");
++    }
+ 
+     std::strncpy(legacySetup.name, name.c_str(), sizeof(legacySetup.name) - 1);
+ 

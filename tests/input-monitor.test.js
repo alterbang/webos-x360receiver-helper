@@ -34,6 +34,30 @@ test("input stream handles partial JSON and stops when the last viewer leaves", 
     assert.equal(kills, 1);
 });
 
+test("wireless reader receives its family and remains independent of 360 viewers", () => {
+    const children = [];
+    const spawn = (file, args) => {
+        const child = new EventEmitter();
+        child.stdout = new EventEmitter();
+        child.stderr = new EventEmitter();
+        child.kills = 0;
+        child.kill = () => { child.kills++; };
+        children.push({child, args});
+        return child;
+    };
+    const xbox360 = createMonitor(spawn, () => 0, "/read.py");
+    const wireless = createMonitor(spawn, () => 0, "/read.py", "one");
+    const first = message("360");
+    const second = message("one");
+    xbox360.subscribe(first);
+    wireless.subscribe(second);
+    assert.deepEqual(children[1].args, ["-u", "/read.py", "one"]);
+    wireless.cancel(second);
+    assert.equal(children[1].child.kills, 1);
+    assert.equal(children[0].child.kills, 0);
+    xbox360.cancel(first);
+});
+
 test("reader failures notify subscribers and allow reopening the test", () => {
     const children = [];
     const monitor = createMonitor(() => {

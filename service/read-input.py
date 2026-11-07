@@ -5,10 +5,12 @@ import glob
 import os
 import select
 import struct
+import sys
 import time
 
 EVENT = struct.Struct("llHHi")
 devices = {}
+family = sys.argv[1] if len(sys.argv) > 1 else "360"
 libc = C.CDLL(None, use_errno=True)
 libc.ioctl.argtypes = [C.c_int, C.c_ulong, C.c_void_p]
 
@@ -25,13 +27,14 @@ def snapshot(device):
     def values(items):
         return ",".join('"%s":%d' % (key, value) for key, value in items.items())
     # The TV's minimal Python has no json module; all fields here are numeric.
-    return '{"slot":%d,"keys":{%s},"axes":{%s},"events":%d}' % (
-        device["slot"], values(device["keys"]), values(device["axes"]), device["events"])
+    return '{"slot":%d,"keys":{%s},"axes":{%s},"axisMax":{%s},"events":%d}' % (
+        device["slot"], values(device["keys"]), values(device["axes"]),
+        values(device["axisMax"]), device["events"])
 
 
 def open_device(path, slot):
     fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
-    device = {"fd": fd, "slot": slot, "keys": {}, "axes": {}, "events": 0}
+    device = {"fd": fd, "slot": slot, "keys": {}, "axes": {}, "axisMax": {}, "events": 0}
     try:
         keys = ioctl(fd, 0x80804518, 128)
         for code in (304, 305, 307, 308, 310, 311, 314, 315, 316, 317, 318,
@@ -40,8 +43,9 @@ def open_device(path, slot):
                                                   (1 << (code % 8)))
         for code in (0, 1, 2, 3, 4, 5, 16, 17):
             try:
-                value = struct.unpack("iiiiii", ioctl(fd, 0x80184540 + code, 24))[0]
-                device["axes"][str(code)] = value
+                info = struct.unpack("iiiiii", ioctl(fd, 0x80184540 + code, 24))
+                device["axes"][str(code)] = info[0]
+                device["axisMax"][str(code)] = info[2]
             except (IOError, OSError):
                 pass
     except Exception:
@@ -52,15 +56,21 @@ def open_device(path, slot):
 
 def discover():
     found = {}
-    for event in glob.glob("/sys/class/input/event*"):
+    for event in sorted(glob.glob("/sys/class/input/event*")):
         try:
             name = open(event + "/device/name").read().strip()
-            if not name.startswith("Xbox 360 Wireless Receiver"):
-                continue
             real = os.path.realpath(event + "/device")
-            # Receiver gamepad interfaces are 0, 2, 4 and 6.
-            interface = int(real.split(":1.")[1].split("/")[0])
-            found["/dev/input/" + os.path.basename(event)] = interface // 2 + 1
+            if family == "one":
+                if name != "Microsoft X-Box 360 pad" or "/virtual/input/" not in real:
+                    continue
+                slot = len(found) + 1
+            else:
+                if not name.startswith("Xbox 360 Wireless Receiver"):
+                    continue
+                # Receiver gamepad interfaces are 0, 2, 4 and 6.
+                interface = int(real.split(":1.")[1].split("/")[0])
+                slot = interface // 2 + 1
+            found["/dev/input/" + os.path.basename(event)] = slot
         except (IOError, ValueError, IndexError):
             continue
     for path in list(devices):
@@ -72,6 +82,8 @@ def discover():
                 devices[path] = open_device(path, slot)
             except (IOError, OSError):
                 pass
+        else:
+            devices[path]["slot"] = slot
 
 
 last_output = None

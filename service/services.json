@@ -1,6 +1,6 @@
 {
   "id": "com.paolo.xboxleds.service",
-  "description": "Xbox 360 controller LED control",
+  "description": "Xbox controller LEDs, wireless driver and input tests",
   "services": [
     {
       "name": "com.paolo.xboxleds.service"

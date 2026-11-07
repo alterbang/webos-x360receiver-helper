@@ -19,6 +19,7 @@
             <button id="test" type="button" data-i18n="test">Test del pad</button>
         </div>
         <div id="status" role="status" aria-live="polite" data-i18n="ready">Pronto.</div>
+        <button id="wireless" type="button" data-i18n="wirelessSection">Xbox One / Series</button>
         <footer data-i18n="notes">
             Richiede TV con root e Homebrew Channel.<br>
             Il pad si disconnette brevemente durante il comando LED.
@@ -27,6 +28,22 @@
             Ripetila dopo una nuova accensione o riconnessione.<br>
             Premi Indietro per uscire.
         </footer>
+    </main>
+    <main id="wireless-panel" hidden>
+        <div class="badge">XBOX ONE / SERIES WIRELESS</div>
+        <h1 data-i18n="wirelessTitle">Ricevitore Xbox One / Series</h1>
+        <p data-i18n="wirelessIntro">Supporto sperimentale per il ricevitore wireless Microsoft.</p>
+        <div class="buttons">
+            <button id="driver-start" type="button" data-i18n="driverStart">Avvia driver</button>
+            <button id="driver-pair" type="button" data-i18n="driverPair">Associa controller</button>
+            <button id="wireless-test" type="button" data-i18n="test">Test del pad</button>
+            <button id="driver-stop" type="button" data-i18n="driverStop">Arresta driver</button>
+        </div>
+        <div id="wireless-status" role="status" aria-live="polite" data-i18n="reading">Preparazione...</div>
+        <button id="wireless-close" type="button" data-i18n="wirelessClose">Torna a Xbox 360</button>
+        <footer data-i18n="wirelessNotes">Il driver resta attivo anche quando chiudi il test o l'app.
+            Arrestalo qui prima di scollegare il ricevitore. Nessun avvio automatico.
+            Il firmware Microsoft deve essere preparato separatamente.</footer>
     </main>
     <main id="test-panel" hidden>
         <div class="badge" data-i18n="testBadge">TEST IN TEMPO REALE</div>
@@ -74,6 +91,7 @@
     </main>
     <script src="i18n.js"></script>
     <script src="pad-state.js"></script>
+    <script src="service-request.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

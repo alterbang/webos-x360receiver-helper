@@ -1,4 +1,4 @@
-module.exports = function (spawn, getuid, scriptPath) {
+module.exports = function (spawn, getuid, scriptPath, family) {
     var clients = {};
     var reader = null;
     var latest = null;
@@ -11,7 +11,9 @@ module.exports = function (spawn, getuid, scriptPath) {
     }
 
     function start() {
-        var child = spawn("/usr/bin/python", ["-u", scriptPath]);
+        var args = ["-u", scriptPath];
+        if (family) { args.push(family); }
+        var child = spawn("/usr/bin/python", args);
         var buffer = "";
         var stderr = "";
         reader = child;

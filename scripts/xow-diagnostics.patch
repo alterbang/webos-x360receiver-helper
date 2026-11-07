@@ -1,0 +1,159 @@
+diff --git a/dongle/dongle.cpp b/dongle/dongle.cpp
+--- a/dongle/dongle.cpp
++++ b/dongle/dongle.cpp
+@@ -20,5 +20,8 @@
+ #include "../utils/log.h"
+ 
++#include <chrono>
++#include <cstdlib>
++
+ Dongle::Dongle(
+     std::unique_ptr<UsbDevice> usbDevice
+ ) : Mt76(std::move(usbDevice)), stopThreads(false)
+@@ -26,6 +29,12 @@
+ {
+     Log::info("Dongle initialized");
+ 
++    if (std::getenv("XOW_DIAGNOSTICS"))
++    {
++        Log::info("Targeted diagnostics enabled; force feedback %s",
++            std::getenv("XOW_DISABLE_RUMBLE") ? "disabled" : "enabled");
++    }
++
+     threads.emplace_back(
+         &Dongle::readBulkPackets,
+         this,
+@@ -200,6 +209,28 @@
+     uint8_t type = wlanFrame->frameControl.type;
+     uint8_t subtype = wlanFrame->frameControl.subtype;
+ 
++    static const bool diagnostics = std::getenv("XOW_DIAGNOSTICS") != nullptr;
++    if (diagnostics)
++    {
++        static std::mutex sampleMutex;
++        static std::chrono::steady_clock::time_point lastSample;
++        static unsigned int packets = 0;
++        std::lock_guard<std::mutex> lock(sampleMutex);
++        ++packets;
++        auto now = std::chrono::steady_clock::now();
++        if (now - lastSample >= std::chrono::seconds(5))
++        {
++            Log::info("Radio sample: wcid=%u packets=%u rssi_raw=%02x,%02x,%02x,%02x mcs=%u bw=%u phy=%u",
++                static_cast<unsigned int>(rxWi->wcid), packets,
++                rxWi->rssi[0], rxWi->rssi[1], rxWi->rssi[2], rxWi->rssi[3],
++                static_cast<unsigned int>(rxWi->mcs),
++                static_cast<unsigned int>(rxWi->bandwidth),
++                static_cast<unsigned int>(rxWi->phyType));
++            packets = 0;
++            lastSample = now;
++        }
++    }
++
+     if (type == MT_WLAN_MANAGEMENT)
+     {
+         switch (subtype)
+@@ -207,5 +238,10 @@
+         {
+             case MT_WLAN_ASSOCIATION_REQ:
++                if (diagnostics)
++                {
++                    Log::info("Association request received: wcid=%u",
++                        static_cast<unsigned int>(rxWi->wcid));
++                }
+                 handleControllerConnect(source);
+                 break;
+ 
+@@ -215,7 +251,20 @@
+             // Disassociations happen without triggering EVT_CLIENT_LOST
+             case MT_WLAN_DISASSOCIATION:
++            {
++                if (diagnostics)
++                {
++                    size_t offset = sizeof(RxWi) + sizeof(WlanFrame);
++                    if (packet.size() >= offset + 2)
++                    {
++                        unsigned int reason = packet[offset] | (packet[offset + 1] << 8);
++                        Log::info("Disconnect source: controller disassociation, wcid=%u reason_raw=%u",
++                            static_cast<unsigned int>(rxWi->wcid), reason);
++                    }
++                    else { Log::info("Disconnect source: truncated controller disassociation"); }
++                }
+                 handleControllerDisconnect(rxWi->wcid);
+                 break;
++            }
+ 
+             // Reserved frames are used for different purposes
+             // Most of them are yet to be discovered
+@@ -272,6 +322,12 @@
+ 
+             case EVT_CLIENT_LOST:
+                 // Packet is guaranteed not to be empty
++                if (std::getenv("XOW_DIAGNOSTICS"))
++                {
++                    Bytes details(packet, 0, packet.size() > 16 ? packet.size() - 16 : 0);
++                    Log::info("Disconnect source: receiver firmware CLIENT_LOST, event_raw=%s",
++                        Log::formatBytes(details).c_str());
++                }
+                 handleControllerDisconnect(packet[0]);
+                 break;
+         }
+diff --git a/controller/input.cpp b/controller/input.cpp
+--- a/controller/input.cpp
++++ b/controller/input.cpp
+@@ -39,6 +39,11 @@
+ 
+ InputDevice::~InputDevice()
+ {
++    if (std::getenv("XOW_DIAGNOSTICS"))
++    {
++        Log::info("Input teardown: stopping feedback reader");
++    }
++
+     // Wait for event thread to shut down
+     if (eventThread.joinable())
+     {
+@@ -48,6 +53,11 @@
+         eventThread.join();
+     }
+ 
++    if (std::getenv("XOW_DIAGNOSTICS"))
++    {
++        Log::info("Input teardown: feedback reader stopped; destroying device");
++    }
++
+     if (
+         ioctl(file, UI_DEV_DESTROY) < 0 ||
+         close(file) < 0
+@@ -55,6 +65,10 @@
+     ) {
+         Log::error("Error closing device: %s", strerror(errno));
+     }
++    else if (std::getenv("XOW_DIAGNOSTICS"))
++    {
++        Log::info("Input teardown: device destroyed");
++    }
+ }
+ 
+ void InputDevice::addKey(uint16_t code)
+@@ -158,6 +172,10 @@
+ 
+ void InputDevice::handleFeedbackUpload(uint32_t id)
+ {
++    if (std::getenv("XOW_DIAGNOSTICS"))
++    {
++        Log::info("Feedback upload: request=%u", id);
++    }
+     uinput_ff_upload upload = {};
+ 
+     upload.request_id = id;
+@@ -190,6 +208,10 @@
+ 
+ void InputDevice::handleFeedbackErase(uint32_t id)
+ {
++    if (std::getenv("XOW_DIAGNOSTICS"))
++    {
++        Log::info("Feedback erase: request=%u", id);
++    }
+     uinput_ff_erase erase = {};
+ 
+     erase.request_id = id;

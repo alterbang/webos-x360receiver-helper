@@ -13,6 +13,12 @@ test("Xbox evdev buttons and D-pad map to the outline", () => {
     assert.equal(decode({}).buttons.a, false);
 });
 
+test("Series trigger ranges use evdev maxima without saturating at 255", () => {
+    const state = decode({axes: {2: 256, 5: 1023}, axisMax: {2: 1023, 5: 1023}});
+    assert.equal(state.lt, 256 / 1023);
+    assert.equal(state.rt, 1);
+});
+
 test("Xbox sticks preserve direction and triggers have independent ranges", () => {
     const state = decode({axes: {0: -32768, 1: 16384, 3: 32767, 4: -16384, 2: 255, 5: 128}});
     assert.deepEqual(state.left, [-1, 0.5]);
